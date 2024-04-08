@@ -1,5 +1,7 @@
 package com.benhu.megasena
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -21,6 +23,8 @@ import java.util.Random
 
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var prefs: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,6 +32,13 @@ class MainActivity : ComponentActivity() {
         val editText: EditText = findViewById(R.id.edit_number)
         val txtResult: TextView = findViewById(R.id.txt_result)
         val btnGenerate: Button = findViewById(R.id.bnt_generate)
+
+        prefs = getSharedPreferences("db", Context.MODE_PRIVATE)
+        val result = prefs.getString("result", null)
+
+        result?.let {
+            txtResult.text = "Última aposta: $it"
+        }
 
         btnGenerate.setOnClickListener {
             val text = editText.text.toString()
@@ -62,6 +73,12 @@ class MainActivity : ComponentActivity() {
             }
         }
         txtResult.text = numbers.sorted().joinToString(" - ")
+
+
+        prefs.edit().apply {
+            putString("result", txtResult.text.toString())
+            apply()
+        }
     }
 }
 
